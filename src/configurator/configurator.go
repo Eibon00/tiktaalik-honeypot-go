@@ -102,9 +102,10 @@ func DirExists(dirpath string) bool {
 	return true
 }
 
-func Config2Byte(config interface{}, order binary.ByteOrder) ([]byte, error) {
+// Struct2Byte 其实这数据库直接存Struct也没啥问题
+func Struct2Byte(s interface{}, order binary.ByteOrder) ([]byte, error) {
 	buf := bytes.NewBuffer([]byte{})
-	err := binary.Write(buf, order, config)
+	err := binary.Write(buf, order, s)
 	if err != nil {
 		panic(err)
 	}
@@ -113,5 +114,8 @@ func Config2Byte(config interface{}, order binary.ByteOrder) ([]byte, error) {
 
 // ConfigCheck 检测config合理性，待实现
 func ConfigCheck(conf Config) error {
+	//主要实现两个功能
+	//1.验证各个配置是否为空
+	//2.验证数据库路径是否合理
 	return nil
 }

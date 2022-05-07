@@ -136,3 +136,71 @@ func WriteConfigFile(config conf.Config) {
 
 	log.Printf("[+] Databases configuration complete !")
 }
+
+func SearchingInCommands(cmdStr string) dbstructs.Commands {
+	var cmd dbstructs.Commands
+	db, err := bolt.Open(GetDbPath(), 0600, &bolt.Options{Timeout: 1 * time.Second})
+	err = db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("commands"))
+		c := b.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			if string(k) == cmdStr {
+				cmd = dbwork.LoadCommands(v)
+			}
+		}
+		return nil
+	})
+	db.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return cmd
+}
+
+// AddUnknownCommand 记录未知的命令
+func AddUnknownCommand(cmdStr string) bool {
+
+	cmd := dbstructs.Commands{
+		Args:      nil,
+		IsAllowed: false,
+		IsUnknown: true,
+	}
+	db, err := bolt.Open(GetDbPath(), 0600, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jsonByte := dbwork.DumpStruct(cmd)
+	err = db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte("commands"))
+		err = bucket.Put([]byte(cmdStr), jsonByte)
+		return nil
+	})
+
+	db.Close()
+	return true
+}
+
+// RecordAll 让数据库记录杂七杂八的东西 bucket:表名 name:列名 s:结构体 成功返回true
+func RecordAll[T dbwork.MyStruct](bucket, name string, s T) bool {
+	db, err := bolt.Open(GetDbPath(), 0600, &bolt.Options{Timeout: 1 * time.Second})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	jsonByte := dbwork.DumpStruct(s)
+	err = db.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(bucket))
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = b.Put([]byte(name), jsonByte)
+		return nil
+	})
+
+	err = db.Close()
+	if err != nil {
+		return false
+	}
+	return true
+}

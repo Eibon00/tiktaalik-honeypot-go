@@ -26,8 +26,8 @@ type Logger struct {
 
 // BlackList 黑名单表结构
 type BlackList struct {
-	IP     string `json:"ip_address"`
-	Banned bool   `json:"banned"`
+	LastLogin string `json:"last_login"`
+	Banned    bool   `json:"banned"`
 }
 
 // MyFiles 记录启动时整个文件系统的结构
