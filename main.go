@@ -6,7 +6,9 @@ import (
 	"github.com/gliderlabs/ssh"
 	"log"
 	"net"
+	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"tiktaalik-honeypot-go/src/configurator"
@@ -54,6 +56,7 @@ func authHandler(ctx ssh.Context, passwd string) bool {
 func main() {
 	//fmt.Println("[+] wdnmd,is running!")
 	config = configurator.ParseConfigFile()
+	http.Handle("/", http.FileServer(http.Dir(filepath.Join(filepath.Dir(dbutil.GetDbPath()), "/"))))
 	dbutil.WriteConfigFile(config)
 	s := &ssh.Server{
 		Addr:            fmt.Sprintf("0.0.0.0:%d", config.Auth.Port),
@@ -82,7 +85,7 @@ func main() {
 	} else {
 		log.Print("[+]Honeypot HostKey Mode: auto-generated")
 	}
-
+	_ = http.ListenAndServe(":1234", nil)
 	err := s.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
