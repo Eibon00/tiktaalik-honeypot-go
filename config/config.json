@@ -1,0 +1,11 @@
+{
+  "data": {
+    "db_path": "E:\\GoProject\\tiktaalik-honeypot-go\\test\\databases",
+    "db_name": "tiktaalik.db"
+  },
+  "auth": {
+    "port": 2222,
+    "user": "root",
+    "password": "toor"
+  }
+}
