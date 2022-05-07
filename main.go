@@ -56,7 +56,7 @@ func main() {
 	config = configurator.ParseConfigFile()
 	dbutil.WriteConfigFile(config)
 	s := &ssh.Server{
-		Addr:            fmt.Sprintf("0.0.0.0:%s", string(rune(config.Auth.Port))),
+		Addr:            fmt.Sprintf("0.0.0.0:%d", config.Auth.Port),
 		Handler:         sessionHandler,
 		PasswordHandler: authHandler,
 		IdleTimeout:     30 * time.Second,

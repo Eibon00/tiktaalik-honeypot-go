@@ -5,12 +5,6 @@ import (
 	"tiktaalik-honeypot-go/src/dbutil/dbstructs"
 )
 
-func ReceiveResult(record []string) dbstructs.Logger {
-	var log dbstructs.Logger
-	log.Record = record
-	return log
-}
-
 func LogClient(ip, loginTime string, Record []string) bool {
 	var log dbstructs.Logger
 	log.IP = ip

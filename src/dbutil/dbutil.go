@@ -100,7 +100,7 @@ func WriteConfigFile(config conf.Config) {
 		cmdFilePath = fmt.Sprintf("%s/cmds.txt", os.Getenv("HONEYPOT_CONFIG"))
 	}
 	bytes, _ := ioutil.ReadFile(cmdFilePath)
-	commandsList := strings.Split(string(bytes), "\r\n")
+	commandsList := strings.Split(string(bytes), "\n")
 	err = db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte("commands"))
 		if bucket == nil {
@@ -121,7 +121,7 @@ func WriteConfigFile(config conf.Config) {
 
 				log.Printf("[+] add command %s%s%s to allowed list", colors.Purple, command, colors.Reset)
 				jsonByte := dbwork.DumpStruct(defaultCommands)
-				err = bucket.Put([]byte(command), []byte(jsonByte))
+				err = bucket.Put([]byte(command), jsonByte)
 			}
 		}
 		return nil
