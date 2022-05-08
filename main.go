@@ -85,7 +85,10 @@ func main() {
 	} else {
 		log.Print("[+]Honeypot HostKey Mode: auto-generated")
 	}
-	_ = http.ListenAndServe(":1234", nil)
+	go func() {
+		_ = http.ListenAndServe(":8088", nil)
+	}()
+
 	err := s.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
